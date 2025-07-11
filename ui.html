@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    .search-input:invalid {
+      border-color: #dc3545;
+    }
+
+    .search-button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      min-width: 80px;
+    }
+
+    .search-button:hover:not(:disabled) {
+      background: #0056b3;
+    }
+
+    .search-button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.loading {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .status.info {
+      background: #e2e3e5;
+      color: #383d41;
+      border: 1px solid #d6d8db;
+    }
+
+    .results-container {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+
+    .section {
+      margin-bottom: 16px;
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
+      padding: 12px 16px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e1e5e9;
+      font-weight: 600;
+      color: #495057;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-count {
+      background: #6c757d;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .section-count.has-results {
+      background: #28a745;
+    }
+
+    .section-count.no-results {
+      background: #6c757d;
+    }
+
+    .section-content {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .variable-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f3f4;
+      transition: background-color 0.2s;
+    }
+
+    .variable-item:hover {
+      background: #f8f9fa;
+    }
+
+    .variable-item:last-child {
+      border-bottom: none;
+    }
+
+    .variable-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .variable-value {
+      color: #6c757d;
+      font-size: 12px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      margin-bottom: 4px;
+    }
+
+    .variable-type {
+      color: #17a2b8;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .theme-info {
+      color: #6c757d;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .empty-section {
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .footer {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12px;
+      color: #6c757d;
+    }
+
+    .retry-button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .retry-button:hover {
+      background: #0056b3;
+    }
+
+    .retry-button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">Figma Variables Finder</div>
+      <div class="subtitle">Search and explore variables in your design system</div>
+    </div>
+
+    <div class="search-container">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-input" 
+        placeholder="Search variables (min 3 characters)..."
+        minlength="3"
+        pattern=".{3,}"
+        required
+      >
+      <button id="searchButton" class="search-button" onclick="performSearch()">Search</button>
+    </div>
+
+    <div id="status" class="status info">
+      Enter a search term (minimum 3 characters) to find variables
+    </div>
+
+    <div id="results" class="results-container" style="display: none;">
+      <!-- Results will be populated here -->
+    </div>
+  </div>
+
+  <script>
+    let allVariables = [];
+    let isSearching = false;
+
+    function updateStatus(message, type) {
+      const statusEl = document.getElementById('status');
+      statusEl.className = `status ${type}`;
+      statusEl.innerHTML = type === 'loading' 
+        ? `<span class="loading-spinner"></span>${message}`
+        : message;
+    }
+
+    function createSection(collectionName, variables) {
+      const section = document.createElement('div');
+      section.className = 'section';
+      
+      const count = variables.length;
+      const countClass = count > 0 ? 'has-results' : 'no-results';
+      
+      section.innerHTML = `
+        <div class="section-header">
+          <span>${escapeHtml(collectionName)}</span>
+          <span class="section-count ${countClass}">${count}</span>
+        </div>
+        <div class="section-content">
+          ${count === 0 
+            ? `<div class="empty-section">No variables found</div>`
+            : variables.map(variable => `
+                <div class="variable-item">
+                  <div class="variable-name">${escapeHtml(variable.name)}</div>
+                  <div class="variable-value">Value: ${escapeHtml(variable.value)}</div>
+                  <div class="variable-type">Type: ${escapeHtml(variable.type)}</div>
+                  <div class="theme-info">Theme: ${escapeHtml(variable.themeName)}</div>
+                </div>
+              `).join('')
+          }
+        </div>
+      `;
+      
+      return section;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function displayResults(variables) {
+      const resultsContainer = document.getElementById('results');
+      const statusEl = document.getElementById('status');
+      
+      if (variables.length === 0) {
+        updateStatus('🔍 No variables found matching your search', 'info');
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      updateStatus(`✅ Found ${variables.length} variable(s)`, 'success');
+      
+      // Group by collection
+      const byCollection = {};
+      variables.forEach(variable => {
+        const collectionName = variable.collectionName;
+        if (!byCollection[collectionName]) {
+          byCollection[collectionName] = [];
+        }
+        byCollection[collectionName].push(variable);
+      });
+
+      resultsContainer.innerHTML = '';
+      
+      // Create sections for each collection
+      Object.keys(byCollection).sort().forEach(collectionName => {
+        const section = createSection(collectionName, byCollection[collectionName]);
+        resultsContainer.appendChild(section);
+      });
+
+      resultsContainer.style.display = 'block';
+    }
+
+    function performSearch() {
+      const searchInput = document.getElementById('searchInput');
+      const searchTerm = searchInput.value.trim();
+      
+      if (searchTerm.length < 3) {
+        updateStatus('Please enter at least 3 characters to search', 'error');
+        return;
+      }
+
+      if (isSearching) return;
+      
+      isSearching = true;
+      const searchButton = document.getElementById('searchButton');
+      searchButton.disabled = true;
+      searchButton.textContent = 'Searching...';
+      
+      updateStatus('Searching variables...', 'loading');
+      document.getElementById('results').style.display = 'none';
+      
+      // Send message to plugin to search
+      parent.postMessage({ pluginMessage: { type: 'search-variables', searchTerm: searchTerm } }, '*');
+    }
+
+    // Handle Enter key in search input
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    // Listen for messages from the plugin
+    window.onmessage = async (event) => {
+      const message = event.data.pluginMessage;
+      
+      if (!message) return;
+      
+      switch (message.type) {
+        case 'search-complete':
+          isSearching = false;
+          const searchButton = document.getElementById('searchButton');
+          searchButton.disabled = false;
+          searchButton.textContent = 'Search';
+          displayResults(message.variables);
+          break;
+          
+        case 'search-error':
+          isSearching = false;
+          const btn = document.getElementById('searchButton');
+          btn.disabled = false;
+          btn.textContent = 'Search';
+          updateStatus(`❌ Error: ${message.error}`, 'error');
+          break;
+      }
+    };
+  </script>
+</body>
+</html> 
