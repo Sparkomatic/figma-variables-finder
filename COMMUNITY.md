@@ -34,6 +34,12 @@ This plugin is **read-only** and will not modify your Figma files. It only scans
 
 Unlike other variable tools that require specific naming conventions, this plugin works with ANY variable structure. Whether you use primitive/semantic/component, tokens/atoms/molecules, or completely custom naming - this plugin will help you find and explore your variables.
 
+## Legal Disclaimer
+
+This plugin is provided "as is" without any warranties, express or implied. The author disclaims all warranties including but not limited to merchantability and fitness for a particular purpose. The author shall not be liable for any damages arising from the use of this plugin.
+
+**Important**: This plugin is read-only and will not modify your Figma files. Always backup your work before using any plugin.
+
 ## Screenshots
 
 [Add screenshots here when you have them]

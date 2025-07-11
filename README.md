@@ -35,6 +35,10 @@ npm run watch    # Development
 npm run build    # Production
 ```
 
+## Disclaimer
+
+This plugin is provided "as is" without warranty of any kind. The plugin is read-only and will not modify your Figma files. Always backup your work before using any plugin. The author is not responsible for any data loss or issues that may arise from using this plugin.
+
 ## License
 
 MIT License 
